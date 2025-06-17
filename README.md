@@ -88,12 +88,14 @@ PowerShell -ExecutionPolicy Bypass -File "M365ModuleUpdater.ps1"
 
 ### Main Interface
 *The clean, intuitive GUI showing module selection and options*
+![image](https://github.com/user-attachments/assets/3f593db4-09d0-4e06-9684-a0cd863c1c14)
 
 ### Progress Tracking
 *Real-time progress with both GUI progress bar and console output*
+![image](https://github.com/user-attachments/assets/baea0533-255f-415a-9f3e-876bdc260224)
 
 ### Results Display
-*Color-coded results showing successful installations and any warnings*
+![image](https://github.com/user-attachments/assets/85677818-dced-452b-9e0d-e1c525db9915)
 
 ## ⚠️ Common Issues & Solutions
 
