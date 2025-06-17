@@ -1,10 +1,10 @@
 # Microsoft 365 PowerShell Module Install/Update
 
-A comprehensive PowerShell GUI application for managing and updating Microsoft 365 PowerShell modules with an intuitive interface.
+A comprehensive PowerShell GUI application for managing and updating Microsoft 365, Azure, and Security PowerShell modules with an intuitive interface.
 
 ![License](https://img.shields.io/badge/license-MIT-blue.svg)
-![PowerShell](https://img.shields.io/badge/PowerShell-5.1%2B-blue.svg)
-![Platform](https://img.shields.io/badge/platform-Windows-lightgrey.svg)
+![PowerShell](https://img.shields.io/badge/PowerShell-5.1%2B%20(Windows)-blue.svg)
+![Platform](https://img.shields.io/badge/platform-Windows%20Only-red.svg)
 
 ## 🚀 Features
 
@@ -16,6 +16,8 @@ A comprehensive PowerShell GUI application for managing and updating Microsoft 3
 - **✅ Dual Output** - Results shown in both GUI and PowerShell console
 - **✅ Error Handling** - Comprehensive error messages and solutions
 - **✅ Flexible Options** - Force installs, prerelease versions, scope selection
+- **✅ Security Management** - Microsoft Defender, Security Center, Intune modules
+- **✅ Authentication** - Modern auth with MSAL and legacy options
 
 ## 📦 Supported Modules
 
@@ -26,20 +28,54 @@ A comprehensive PowerShell GUI application for managing and updating Microsoft 3
 | **MicrosoftTeams** | Microsoft Teams management |
 | **Microsoft.Graph** | Microsoft Graph (Complete SDK) |
 | **Microsoft.Graph.Identity.DirectoryManagement** | Entra ID Directory Management |
+| **Microsoft.Graph.Security** | Microsoft Graph Security (Defender for Endpoint) |
+| **Microsoft.Graph.DeviceManagement** | Intune Device Management |
 | **Az** | Azure PowerShell (Complete Az Module) |
-| **Az.Accounts, Az.Resources, Az.KeyVault, Az.Storage** | Specific Azure modules |
-| **MSOnline, AzureAD** | Legacy Azure AD modules |
+| **Az.Accounts** | Azure Accounts (Core authentication) |
+| **Az.Resources** | Azure Resources management |
+| **Az.KeyVault** | Azure Key Vault operations |
+| **Az.Storage** | Azure Storage management |
+| **Az.Security** | Azure Security Center (Defender for Cloud) |
+| **MSAL.PS** | Microsoft Authentication Library (Modern Auth) |
+| **MSOnline** | Legacy Azure AD module |
+| **AzureAD** | Legacy Azure AD module (newer) |
 | **Microsoft.PowerApps.Administration.PowerShell** | Power Platform Admin |
+| **Microsoft.PowerApps.PowerShell** | Power Platform development |
+| **Microsoft.Xrm.Data.PowerShell** | Dynamics 365 operations |
 | **PnP.PowerShell** | PnP PowerShell (SharePoint/M365) |
-| **Microsoft.PowerShell.SecretManagement** | Secret Management |
+| **Microsoft.PowerShell.SecretManagement** | Secret Management framework |
+| **Microsoft.PowerShell.SecretStore** | Local secret storage |
+
+### 🛡️ Security & Compliance Coverage
+
+| Security Area | Modules |
+|---------------|---------|
+| **Endpoint Security** | Microsoft.Graph.Security |
+| **Email Security** | ExchangeOnlineManagement |
+| **Cloud Security** | Az.Security |
+| **Device Management** | Microsoft.Graph.DeviceManagement |
+| **Identity Security** | Microsoft.Graph.Identity.DirectoryManagement |
+| **Modern Authentication** | MSAL.PS |
+| **Legacy Identity** | MSOnline, AzureAD |
 
 ## 🔧 Requirements
 
-- **PowerShell 5.1** or later
-- **Windows** operating system
+- **PowerShell 5.1** or later (**Windows PowerShell only**)
+- **Windows** operating system (**macOS and Linux not supported**)
 - **Internet connection** for module downloads
 - **Administrator privileges** (for AllUsers scope installation)
 - **PowerShellGet module** (pre-installed with PowerShell 5.1+)
+
+## 🖥️ Platform Compatibility
+
+| Platform | Support | Notes |
+|----------|---------|-------|
+| **Windows 10/11** | ✅ Full Support | Recommended platform |
+| **Windows Server** | ✅ Full Support | All features available |
+| **macOS** | ❌ Not Supported | GUI framework incompatible |
+| **Linux** | ❌ Not Supported | Windows Forms not available |
+
+**For macOS/Linux users**: Consider using individual PowerShell commands or Azure Cloud Shell for module management.
 
 ## 📥 Installation
 
@@ -142,10 +178,11 @@ Contributions are welcome! Please feel free to submit a Pull Request. For major 
 ### Version 1.0
 - Initial release
 - GUI interface for module management
-- Support for 18+ Microsoft 365 and Azure modules
+- Support for 23+ Microsoft 365, Azure, and Security modules
 - Real-time progress tracking
 - Dual output (GUI + console)
 - Comprehensive error handling
+- Security and compliance module coverage
 
 ## 📄 License
 
@@ -155,7 +192,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 **Gulab Prasad**
 - Website: [https://gulabprasad.com](https://gulabprasad.com)
-- GitHub: [@CodeAIGit](https://github.com/codeaigit)
+- GitHub: [@yourusername](https://github.com/cloudaigit)
 
 ## 🙏 Acknowledgments
 
