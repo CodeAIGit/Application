@@ -192,7 +192,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 **Gulab Prasad**
 - Website: [https://gulabprasad.com](https://gulabprasad.com)
-- GitHub: [@yourusername](https://github.com/cloudaigit)
+- GitHub: [@yCloudAIGit](https://github.com/cloudaigit)
 
 ## 🙏 Acknowledgments
 
