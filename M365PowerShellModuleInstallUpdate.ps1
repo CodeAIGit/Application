@@ -168,8 +168,12 @@ $modules = @{
     "Az.Resources" = "Azure Resources"
     "Az.KeyVault" = "Azure Key Vault"
     "Az.Storage" = "Azure Storage"
+    "Az.Security" = "Azure Security Center"
     "MSOnline" = "Azure AD (MSOnline) - Legacy"
     "AzureAD" = "Azure AD (AzureAD) - Legacy"
+    "Microsoft.Graph.Security" = "Microsoft Graph Security"
+    "Microsoft.Graph.DeviceManagement" = "Intune Device Management"
+    "MSAL.PS" = "Microsoft Authentication Library"
     "Microsoft.PowerApps.Administration.PowerShell" = "Power Platform Admin"
     "Microsoft.PowerApps.PowerShell" = "Power Platform"
     "Microsoft.Xrm.Data.PowerShell" = "Dynamics 365"
@@ -241,7 +245,7 @@ $buttonPanel.Controls.Add($currentVersionBtn)
 # Options GroupBox
 $optionsGroup = New-Object System.Windows.Forms.GroupBox
 $infoLabel = New-Object System.Windows.Forms.Label
-$infoLabel.Text = "💡 If you see 'currently in use' warnings, restart PowerShell after installation to complete updates."
+$infoLabel.Text = "If you see 'currently in use' warnings, restart PowerShell after installation to complete updates."
 $infoLabel.Location = New-Object System.Drawing.Point(400, 250)
 $infoLabel.Size = New-Object System.Drawing.Size(350, 40)
 $infoLabel.Font = New-Object System.Drawing.Font("Segoe UI", 8)
