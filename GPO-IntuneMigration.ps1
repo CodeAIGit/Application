@@ -489,7 +489,6 @@ $discPanel.Controls.Add($lblOU)
 $txtOU = New-Object System.Windows.Forms.TextBox
 $txtOU.Location    = New-Object System.Drawing.Point(645, 12)
 $txtOU.Size        = New-Object System.Drawing.Size(310, 22)
-$txtOU.PlaceholderText = "e.g. OU=Computers,DC=corp,DC=local"
 $discPanel.Controls.Add($txtOU)
 
 $btnDiscover = New-Object System.Windows.Forms.Button
@@ -703,7 +702,6 @@ $grpConnect.Controls.Add($lblTenantId)
 $txtTenantId = New-Object System.Windows.Forms.TextBox
 $txtTenantId.Location    = New-Object System.Drawing.Point(90, 22)
 $txtTenantId.Size        = New-Object System.Drawing.Size(280, 22)
-$txtTenantId.PlaceholderText = "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
 $grpConnect.Controls.Add($txtTenantId)
 
 $btnConnect = New-Object System.Windows.Forms.Button
