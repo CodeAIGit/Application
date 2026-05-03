@@ -1,4 +1,4 @@
-<#
+﻿<#
 .SYNOPSIS
     Active Directory GPO to Microsoft Intune Migration Tool
 
@@ -27,7 +27,7 @@
     Created : 2025
 
 .LICENSE
-    MIT License — see LICENSE file for details.
+    MIT License - see LICENSE file for details.
 #>
 
 #Requires -Version 5.1
@@ -35,47 +35,47 @@
 Add-Type -AssemblyName System.Windows.Forms
 Add-Type -AssemblyName System.Drawing
 
-# ──────────────────────────────────────────────────────────────────────────────
+# ------------------------------------------------------------------------------
 # Global state
-# ──────────────────────────────────────────────────────────────────────────────
+# ------------------------------------------------------------------------------
 $script:DiscoveredGPOs   = @()
 $script:AssessedGPOs     = @()
 $script:MigrationResults = @()
 $script:ExportFolder     = [System.IO.Path]::Combine($env:TEMP, "GPO-IntuneMigration")
 $script:GraphConnected   = $false
 
-# ──────────────────────────────────────────────────────────────────────────────
+# ------------------------------------------------------------------------------
 # GPO-to-Intune mapping reference table
 # Key = XML section identifier, Value = hashtable with Intune info
-# ──────────────────────────────────────────────────────────────────────────────
+# ------------------------------------------------------------------------------
 $script:GPOMapping = @{
-    "SecuritySettings"         = @{ IntuneProfile = "Endpoint Security – Security Baselines / Account Protection"; Status = "Supported";    Notes = "Maps to Intune Endpoint Security policies and Security Baselines." }
-    "WindowsFirewall"          = @{ IntuneProfile = "Endpoint Security – Firewall";                                 Status = "Supported";    Notes = "Maps directly to Intune Firewall profiles under Endpoint Security." }
-    "BitLocker"                = @{ IntuneProfile = "Endpoint Security – Disk Encryption (BitLocker)";              Status = "Supported";    Notes = "Maps to Intune BitLocker configuration profile." }
-    "WindowsUpdateServices"    = @{ IntuneProfile = "Windows Update for Business – Update Rings";                   Status = "Supported";    Notes = "Maps to Intune Windows Update Rings and Feature Update policies." }
-    "AdministrativeTemplates"  = @{ IntuneProfile = "Configuration Profiles – Settings Catalog / Admin Templates";  Status = "Partial";      Notes = "ADMX-backed policies map to Settings Catalog. Custom ADMX may need OMA-URI." }
-    "InternetExplorer"         = @{ IntuneProfile = "Configuration Profiles – Microsoft Edge (Settings Catalog)";   Status = "Partial";      Notes = "IE policies superseded by Edge. Migrate to Edge Settings Catalog entries." }
-    "Scripts"                  = @{ IntuneProfile = "Devices – Scripts (PowerShell)";                               Status = "Partial";      Notes = "Logon/Logoff/Startup/Shutdown scripts can run as Intune PowerShell scripts." }
-    "FolderRedirection"        = @{ IntuneProfile = "Not Supported – use OneDrive Known Folder Move";               Status = "NotSupported"; Notes = "Intune does not support Folder Redirection. Use OneDrive KFM via Settings Catalog." }
-    "DriveMaps"                = @{ IntuneProfile = "Not Supported – use logon script or third-party";              Status = "NotSupported"; Notes = "Drive maps via GP Preferences have no direct Intune equivalent." }
-    "Printers"                 = @{ IntuneProfile = "Partial – Universal Print or Win32 app script";                Status = "Partial";      Notes = "Universal Print integration or PowerShell script deployment via Intune." }
-    "SoftwareInstallation"     = @{ IntuneProfile = "Apps – Win32 App / Line-of-Business App";                      Status = "Partial";      Notes = "Use Intune app deployment (Win32, MSI, MSIX) instead of GP Software Install." }
-    "AppLocker"                = @{ IntuneProfile = "Endpoint Security – App Control for Business";                  Status = "Partial";      Notes = "AppLocker policies can be migrated; WDAC/App Control is the modern equivalent." }
-    "WirelessNetworks"         = @{ IntuneProfile = "Configuration Profiles – Wi-Fi";                               Status = "Supported";    Notes = "Maps to Intune Wi-Fi configuration profiles." }
-    "WiredNetworks"            = @{ IntuneProfile = "Configuration Profiles – Wired Network (802.1x)";              Status = "Supported";    Notes = "Maps to Intune Wired Network configuration profiles." }
-    "CertificateSettings"      = @{ IntuneProfile = "Configuration Profiles – Trusted Certificate / SCEP / PKCS";   Status = "Supported";    Notes = "Root/intermediate CAs map to Trusted Certificate profiles." }
-    "PowerOptions"             = @{ IntuneProfile = "Configuration Profiles – Settings Catalog (Power)";            Status = "Supported";    Notes = "Power settings available in Settings Catalog." }
-    "SystemServices"           = @{ IntuneProfile = "Not Supported – use PowerShell script";                        Status = "NotSupported"; Notes = "Service configuration has no native Intune equivalent; use remediation scripts." }
-    "RegistryPreferences"      = @{ IntuneProfile = "Configuration Profiles – Custom OMA-URI";                      Status = "Partial";      Notes = "Registry preferences can be replicated via custom OMA-URI or Settings Catalog." }
-    "EnvironmentVariables"     = @{ IntuneProfile = "Not Supported – use PowerShell script";                        Status = "NotSupported"; Notes = "No native Intune equivalent; deploy via PowerShell script." }
-    "IniFiles"                 = @{ IntuneProfile = "Not Supported – use PowerShell script";                        Status = "NotSupported"; Notes = "No native Intune equivalent." }
-    "LocalUsers"               = @{ IntuneProfile = "Endpoint Security – Account Protection (LAPS)";                Status = "Partial";      Notes = "Local admin account management via Windows LAPS in Intune." }
-    "AuditPolicy"              = @{ IntuneProfile = "Endpoint Security – Security Baselines / Custom";               Status = "Supported";    Notes = "Advanced audit policies available in Endpoint Security baselines." }
-    "UserRightsAssignment"     = @{ IntuneProfile = "Endpoint Security – Security Baselines";                        Status = "Supported";    Notes = "User rights assignments in Intune Security Baselines." }
-    "RestrictedGroups"         = @{ IntuneProfile = "Endpoint Security – Account Protection";                        Status = "Supported";    Notes = "Local group membership managed via Account Protection policy." }
-    "WindowsDefender"          = @{ IntuneProfile = "Endpoint Security – Antivirus";                                Status = "Supported";    Notes = "Defender AV settings map to Intune Antivirus profiles." }
-    "AttackSurfaceReduction"   = @{ IntuneProfile = "Endpoint Security – Attack Surface Reduction";                  Status = "Supported";    Notes = "ASR rules map directly to Intune ASR profiles." }
-    "ExploitGuard"             = @{ IntuneProfile = "Endpoint Security – Attack Surface Reduction";                  Status = "Supported";    Notes = "Exploit protection settings available in ASR profiles." }
+    "SecuritySettings"         = @{ IntuneProfile = "Endpoint Security - Security Baselines / Account Protection"; Status = "Supported";    Notes = "Maps to Intune Endpoint Security policies and Security Baselines." }
+    "WindowsFirewall"          = @{ IntuneProfile = "Endpoint Security - Firewall";                                  Status = "Supported";    Notes = "Maps directly to Intune Firewall profiles under Endpoint Security." }
+    "BitLocker"                = @{ IntuneProfile = "Endpoint Security - Disk Encryption (BitLocker)";               Status = "Supported";    Notes = "Maps to Intune BitLocker configuration profile." }
+    "WindowsUpdateServices"    = @{ IntuneProfile = "Windows Update for Business - Update Rings";                    Status = "Supported";    Notes = "Maps to Intune Windows Update Rings and Feature Update policies." }
+    "AdministrativeTemplates"  = @{ IntuneProfile = "Configuration Profiles - Settings Catalog / Admin Templates";   Status = "Partial";      Notes = "ADMX-backed policies map to Settings Catalog. Custom ADMX may need OMA-URI." }
+    "InternetExplorer"         = @{ IntuneProfile = "Configuration Profiles - Microsoft Edge (Settings Catalog)";    Status = "Partial";      Notes = "IE policies superseded by Edge. Migrate to Edge Settings Catalog entries." }
+    "Scripts"                  = @{ IntuneProfile = "Devices - Scripts (PowerShell)";                                Status = "Partial";      Notes = "Logon/Logoff/Startup/Shutdown scripts can run as Intune PowerShell scripts." }
+    "FolderRedirection"        = @{ IntuneProfile = "Not Supported - use OneDrive Known Folder Move";                Status = "NotSupported"; Notes = "Intune does not support Folder Redirection. Use OneDrive KFM via Settings Catalog." }
+    "DriveMaps"                = @{ IntuneProfile = "Not Supported - use logon script or third-party";               Status = "NotSupported"; Notes = "Drive maps via GP Preferences have no direct Intune equivalent." }
+    "Printers"                 = @{ IntuneProfile = "Partial - Universal Print or Win32 app script";                 Status = "Partial";      Notes = "Universal Print integration or PowerShell script deployment via Intune." }
+    "SoftwareInstallation"     = @{ IntuneProfile = "Apps - Win32 App / Line-of-Business App";                       Status = "Partial";      Notes = "Use Intune app deployment (Win32, MSI, MSIX) instead of GP Software Install." }
+    "AppLocker"                = @{ IntuneProfile = "Endpoint Security - App Control for Business";                   Status = "Partial";      Notes = "AppLocker policies can be migrated; WDAC/App Control is the modern equivalent." }
+    "WirelessNetworks"         = @{ IntuneProfile = "Configuration Profiles - Wi-Fi";                                Status = "Supported";    Notes = "Maps to Intune Wi-Fi configuration profiles." }
+    "WiredNetworks"            = @{ IntuneProfile = "Configuration Profiles - Wired Network (802.1x)";               Status = "Supported";    Notes = "Maps to Intune Wired Network configuration profiles." }
+    "CertificateSettings"      = @{ IntuneProfile = "Configuration Profiles - Trusted Certificate / SCEP / PKCS";    Status = "Supported";    Notes = "Root/intermediate CAs map to Trusted Certificate profiles." }
+    "PowerOptions"             = @{ IntuneProfile = "Configuration Profiles - Settings Catalog (Power)";             Status = "Supported";    Notes = "Power settings available in Settings Catalog." }
+    "SystemServices"           = @{ IntuneProfile = "Not Supported - use PowerShell script";                         Status = "NotSupported"; Notes = "Service configuration has no native Intune equivalent; use remediation scripts." }
+    "RegistryPreferences"      = @{ IntuneProfile = "Configuration Profiles - Custom OMA-URI";                       Status = "Partial";      Notes = "Registry preferences can be replicated via custom OMA-URI or Settings Catalog." }
+    "EnvironmentVariables"     = @{ IntuneProfile = "Not Supported - use PowerShell script";                         Status = "NotSupported"; Notes = "No native Intune equivalent; deploy via PowerShell script." }
+    "IniFiles"                 = @{ IntuneProfile = "Not Supported - use PowerShell script";                         Status = "NotSupported"; Notes = "No native Intune equivalent." }
+    "LocalUsers"               = @{ IntuneProfile = "Endpoint Security - Account Protection (LAPS)";                 Status = "Partial";      Notes = "Local admin account management via Windows LAPS in Intune." }
+    "AuditPolicy"              = @{ IntuneProfile = "Endpoint Security - Security Baselines / Custom";                Status = "Supported";    Notes = "Advanced audit policies available in Endpoint Security baselines." }
+    "UserRightsAssignment"     = @{ IntuneProfile = "Endpoint Security - Security Baselines";                         Status = "Supported";    Notes = "User rights assignments in Intune Security Baselines." }
+    "RestrictedGroups"         = @{ IntuneProfile = "Endpoint Security - Account Protection";                         Status = "Supported";    Notes = "Local group membership managed via Account Protection policy." }
+    "WindowsDefender"          = @{ IntuneProfile = "Endpoint Security - Antivirus";                                  Status = "Supported";    Notes = "Defender AV settings map to Intune Antivirus profiles." }
+    "AttackSurfaceReduction"   = @{ IntuneProfile = "Endpoint Security - Attack Surface Reduction";                   Status = "Supported";    Notes = "ASR rules map directly to Intune ASR profiles." }
+    "ExploitGuard"             = @{ IntuneProfile = "Endpoint Security - Attack Surface Reduction";                   Status = "Supported";    Notes = "Exploit protection settings available in ASR profiles." }
 }
 
 # Status color map
@@ -86,9 +86,9 @@ $script:StatusColors = @{
     "Unknown"      = [System.Drawing.Color]::FromArgb(220, 220, 220)   # light grey
 }
 
-# ──────────────────────────────────────────────────────────────────────────────
+# ------------------------------------------------------------------------------
 # Helper functions
-# ──────────────────────────────────────────────────────────────────────────────
+# ------------------------------------------------------------------------------
 
 function Write-Log {
     param([System.Windows.Forms.TextBox]$Box, [string]$Message, [string]$Level = "INFO")
@@ -186,7 +186,7 @@ function Get-GPOSettingSections {
         }
     }
 
-    # Fallback — if XML parsed but no extension data found, try raw content scan
+    # Fallback - if XML parsed but no extension data found, try raw content scan
     if ($sections.Count -eq 0) {
         $raw = $GPOXml.InnerXml
         if ($raw -match "SecuritySettings|AuditSetting|UserRight")  { $sections += "SecuritySettings" }
@@ -399,9 +399,9 @@ function Export-HTMLReport {
     $html | Out-File -FilePath $OutputPath -Encoding UTF8
 }
 
-# ──────────────────────────────────────────────────────────────────────────────
+# ------------------------------------------------------------------------------
 # Main Form
-# ──────────────────────────────────────────────────────────────────────────────
+# ------------------------------------------------------------------------------
 $form = New-Object System.Windows.Forms.Form
 $form.Text            = "GPO to Microsoft Intune Migration Tool"
 $form.Size            = New-Object System.Drawing.Size(1100, 780)
@@ -410,7 +410,7 @@ $form.BackColor       = [System.Drawing.Color]::White
 $form.Font            = New-Object System.Drawing.Font("Segoe UI", 9)
 $form.MinimumSize     = New-Object System.Drawing.Size(900, 650)
 
-# ── Header panel ──────────────────────────────────────────────────────────────
+# -- Header panel --------------------------------------------------------------
 $headerPanel = New-Object System.Windows.Forms.Panel
 $headerPanel.Dock      = "Top"
 $headerPanel.Height    = 65
@@ -426,7 +426,7 @@ $titleLabel.Size      = New-Object System.Drawing.Size(700, 28)
 $headerPanel.Controls.Add($titleLabel)
 
 $subtitleLabel = New-Object System.Windows.Forms.Label
-$subtitleLabel.Text      = "  Discover · Assess · Migrate · Report"
+$subtitleLabel.Text      = "  Discover * Assess * Migrate * Report"
 $subtitleLabel.Font      = New-Object System.Drawing.Font("Segoe UI", 9, [System.Drawing.FontStyle]::Italic)
 $subtitleLabel.ForeColor = [System.Drawing.Color]::FromArgb(180, 210, 255)
 $subtitleLabel.Location  = New-Object System.Drawing.Point(10, 38)
@@ -444,7 +444,7 @@ $websiteLink.Size           = New-Object System.Drawing.Size(160, 20)
 $websiteLink.Add_LinkClicked({ Start-Process "https://gulabprasad.com" })
 $headerPanel.Controls.Add($websiteLink)
 
-# ── TabControl ────────────────────────────────────────────────────────────────
+# -- TabControl ----------------------------------------------------------------
 $tabs = New-Object System.Windows.Forms.TabControl
 $tabs.Dock       = "Fill"
 $tabs.Font       = New-Object System.Drawing.Font("Segoe UI", 10, [System.Drawing.FontStyle]::Bold)
@@ -452,9 +452,9 @@ $tabs.ItemSize   = New-Object System.Drawing.Size(200, 32)
 $tabs.SizeMode   = "Fixed"
 $form.Controls.Add($tabs)
 
-# ══════════════════════════════════════════════════════════════════════════════
-# TAB 1 — DISCOVERY
-# ══════════════════════════════════════════════════════════════════════════════
+# ==============================================================================
+# TAB 1 - DISCOVERY
+# ==============================================================================
 $tabDiscover = New-Object System.Windows.Forms.TabPage
 $tabDiscover.Text    = "  1. Discovery  "
 $tabDiscover.Padding = New-Object System.Windows.Forms.Padding(10)
@@ -524,7 +524,7 @@ $btnExportXMLs.Enabled   = $false
 $discPanel.Controls.Add($btnExportXMLs)
 
 $lblDiscStatus = New-Object System.Windows.Forms.Label
-$lblDiscStatus.Text      = "Ready — click Discover GPOs to connect to Active Directory."
+$lblDiscStatus.Text      = "Ready - click Discover GPOs to connect to Active Directory."
 $lblDiscStatus.Location  = New-Object System.Drawing.Point(490, 58)
 $lblDiscStatus.Size      = New-Object System.Drawing.Size(560, 20)
 $lblDiscStatus.ForeColor = [System.Drawing.Color]::DimGray
@@ -566,9 +566,9 @@ $discLogBox.Dock        = "Bottom"
 $discLogBox.Height      = 120
 $tabDiscover.Controls.Add($discLogBox)
 
-# ══════════════════════════════════════════════════════════════════════════════
-# TAB 2 — ASSESSMENT
-# ══════════════════════════════════════════════════════════════════════════════
+# ==============================================================================
+# TAB 2 - ASSESSMENT
+# ==============================================================================
 $tabAssess = New-Object System.Windows.Forms.TabPage
 $tabAssess.Text    = "  2. Assessment  "
 $tabAssess.Padding = New-Object System.Windows.Forms.Padding(10)
@@ -673,9 +673,9 @@ $assessGrid.Add_SelectionChanged({
     }
 })
 
-# ══════════════════════════════════════════════════════════════════════════════
-# TAB 3 — MIGRATION
-# ══════════════════════════════════════════════════════════════════════════════
+# ==============================================================================
+# TAB 3 - MIGRATION
+# ==============================================================================
 $tabMigrate = New-Object System.Windows.Forms.TabPage
 $tabMigrate.Text    = "  3. Migration  "
 $tabMigrate.Padding = New-Object System.Windows.Forms.Padding(10)
@@ -795,9 +795,9 @@ $migLogBox.Dock       = "Bottom"
 $migLogBox.Height     = 130
 $tabMigrate.Controls.Add($migLogBox)
 
-# ══════════════════════════════════════════════════════════════════════════════
-# TAB 4 — REPORT
-# ══════════════════════════════════════════════════════════════════════════════
+# ==============================================================================
+# TAB 4 - REPORT
+# ==============================================================================
 $tabReport = New-Object System.Windows.Forms.TabPage
 $tabReport.Text    = "  4. Report  "
 $tabReport.Padding = New-Object System.Windows.Forms.Padding(10)
@@ -936,15 +936,15 @@ foreach ($col in @(
     $rptGrid.Columns.Add($c) | Out-Null
 }
 
-# ──────────────────────────────────────────────────────────────────────────────
+# ------------------------------------------------------------------------------
 # Event handlers
-# ──────────────────────────────────────────────────────────────────────────────
+# ------------------------------------------------------------------------------
 
-# DISCOVERY ───────────────────────────────────────────────────────────────────
+# DISCOVERY -------------------------------------------------------------------
 $btnDiscover.Add_Click({
     if (-not (Test-GroupPolicyModule)) {
         [System.Windows.Forms.MessageBox]::Show(
-            "The GroupPolicy PowerShell module was not found.`n`nPlease install RSAT: Group Policy Management Tools.`n`n  Windows 10/11: Settings → Apps → Optional Features → RSAT`n  Server: Add-WindowsFeature GPMC",
+            "The GroupPolicy PowerShell module was not found.`n`nPlease install RSAT: Group Policy Management Tools.`n`n  Windows 10/11: Settings -> Apps -> Optional Features -> RSAT`n  Server: Add-WindowsFeature GPMC",
             "Missing Module", "OK", "Warning")
         return
     }
@@ -1112,7 +1112,7 @@ $btnExportXMLs.Add_Click({
     [System.Windows.Forms.MessageBox]::Show("$saved GPO XML file(s) saved to:`n$outDir", "Export Complete", "OK", "Information")
 })
 
-# ASSESSMENT ──────────────────────────────────────────────────────────────────
+# ASSESSMENT ------------------------------------------------------------------
 function Invoke-Assessment {
     param([System.Collections.Generic.List[PSCustomObject]]$GPOs)
 
@@ -1238,7 +1238,7 @@ $btnAssessAll.Add_Click({
     Invoke-Assessment -GPOs $all
 })
 
-# MIGRATION ───────────────────────────────────────────────────────────────────
+# MIGRATION -------------------------------------------------------------------
 $btnConnect.Add_Click({
     if (-not (Test-GraphModules)) {
         $result = [System.Windows.Forms.MessageBox]::Show(
@@ -1323,17 +1323,17 @@ $btnMigrate.Add_Click({
         try {
             if ($isDryRun) {
                 $message = "Dry-run: Would create profile '$profileName' (sections: $($gpo.SectionsSummary))"
-                Write-Log $migLogBox "[DRY-RUN] $($gpo.Name) → $profileName"
+                Write-Log $migLogBox "[DRY-RUN] $($gpo.Name) -> $profileName"
             } else {
                 if (-not $script:GraphConnected) { throw "Not connected to Microsoft Graph." }
                 $profile = New-IntuneConfigurationProfile -DisplayName $profileName -Description $description
                 $message = "Profile created: ID=$($profile.Id)"
-                Write-Log $migLogBox "MIGRATED: $($gpo.Name) → $profileName (ID: $($profile.Id))"
+                Write-Log $migLogBox "MIGRATED: $($gpo.Name) -> $profileName (ID: $($profile.Id))"
             }
         } catch {
             $status  = "Failed"
             $message = $_.Exception.Message
-            Write-Log $migLogBox "FAILED: $($gpo.Name) — $message" "ERROR"
+            Write-Log $migLogBox "FAILED: $($gpo.Name) - $message" "ERROR"
         }
 
         $result = [PSCustomObject]@{
@@ -1362,12 +1362,12 @@ $btnMigrate.Add_Click({
     $btnMigrate.Enabled = $true
     $succeeded = ($script:MigrationResults | Where-Object { $_.Status -eq "Success" }).Count
     $failed    = ($script:MigrationResults | Where-Object { $_.Status -eq "Failed" }).Count
-    $modeNote  = if ($isDryRun) { " (dry-run — no actual changes made)" } else { "" }
+    $modeNote  = if ($isDryRun) { " (dry-run - no actual changes made)" } else { "" }
     Write-Log $migLogBox "Migration complete$modeNote. Succeeded: $succeeded | Failed: $failed"
     $lblMigStatus.Text = "Complete$modeNote. Succeeded: $succeeded | Failed: $failed. See Report tab."
 })
 
-# REPORT ──────────────────────────────────────────────────────────────────────
+# REPORT ----------------------------------------------------------------------
 $script:LastReportPath = ""
 
 $btnExportHTML.Add_Click({
@@ -1424,9 +1424,9 @@ $btnOpenReport.Add_Click({
     Start-Process $script:LastReportPath
 })
 
-# ──────────────────────────────────────────────────────────────────────────────
+# ------------------------------------------------------------------------------
 # Startup
-# ──────────────────────────────────────────────────────────────────────────────
+# ------------------------------------------------------------------------------
 Write-Log $discLogBox "GPO to Intune Migration Tool loaded."
 Write-Log $discLogBox "Step 1: Enter your domain and click 'Discover GPOs'."
 Write-Log $discLogBox "Step 2: Go to Assessment tab and assess migration readiness."
@@ -1434,6 +1434,6 @@ Write-Log $discLogBox "Step 3: Connect to Microsoft Graph and migrate supported 
 Write-Log $discLogBox "Step 4: Export an HTML or CSV report of the full migration."
 
 Write-Host "`n=== GPO TO MICROSOFT INTUNE MIGRATION TOOL ===" -ForegroundColor White -BackgroundColor DarkBlue
-Write-Host "GUI loaded. Follow the four tabs: Discovery → Assessment → Migration → Report." -ForegroundColor Cyan
+Write-Host "GUI loaded. Follow the four tabs: Discovery -> Assessment -> Migration -> Report." -ForegroundColor Cyan
 
 $form.ShowDialog() | Out-Null
